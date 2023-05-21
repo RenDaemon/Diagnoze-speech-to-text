@@ -62,6 +62,7 @@ const Homepage = () => {
       .then((response) => {
         const api = response.data.result;
         setMedicine(api);
+        console.log(api)
       })
       .catch((error) => {
         console.error(error);
@@ -168,45 +169,46 @@ const Homepage = () => {
           </div>
         </div>
         <div className="w-full h-full mt-3 grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-7 p-2 px-7 ">
-            {medicine
-                ? medicine.map((med) => (
+          {medicine
+            ? medicine.map((med) => (
+                <div
+                  className=" p-4 shadow-md border-gray-200 border-[1px]"
+                  key={med.external_id}
+                >
+                  <p>{med.name}</p>
+                  <img
+                    src={med.image_url}
+                    alt={med.name}
+                    className="w-40 mx-auto"
+                  />
+                  <p>
+                    Range Harga: Rp.{med.min_price} - Rp.{med.base_price}
+                  </p>
+                  <button
+                    onClick={async () => {
+                      await getMedicineDetail(med.slug);
+                      setShowModal(true);
+                    }}
+                  >
+                    Details
+                  </button>
+                  {showModal ? (
                     <div
-                      className=" p-4 shadow-md border-gray-200 border-[1px]"
-                      key={med.external_id}
+                      onClick={() => setShowModal(false)}
+                      className="flex justify-center items-center fixed inset-0 bg-black bg-opacity-5 backdrop-blur-md"
                     >
-                      <p>{med.name}</p>
-                      <img
-                        src={med.image_url}
-                        alt={med.name}
-                        className="w-40 mx-auto"
-                      />
-                      <p>
-                        Range Harga: Rp.{med.min_price} - Rp.{med.base_price}
-                      </p>
-                      <button
-                        onClick={async () => {
-                          await getMedicineDetail(med.slug) 
-                          setShowModal(true)
-                        }}
+                      <div
+                        ref={modalRef}
+                        className="bg-slate-100 p-4 w-56 rounded-md"
                       >
-                        Details
-                      </button>
-                      {showModal ? 
-                        <div
-                        onClick={() => setShowModal(false)}
-                        className="flex justify-center items-center fixed inset-0 bg-black bg-opacity-5 backdrop-blur-md"
-                      >
-                        <div ref={modalRef} className="bg-slate-100 p-4 w-56 rounded-md">
-                          <p onClick={() => setShowModal(false)}>X</p>
-                          {medicineDetail.description}
-                        </div>
+                        <p onClick={() => setShowModal(false)}>X</p>
+                        {medicineDetail.description}
                       </div>
-                        : null
-                      }
                     </div>
-                  ))
-                : ""
-            }
+                  ) : null}
+                </div>
+              ))
+            : ""}
         </div>
         {/* <MedicineList medicine={medicine} /> */}
       </div>

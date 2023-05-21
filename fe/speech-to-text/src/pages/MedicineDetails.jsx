@@ -12,7 +12,9 @@ export default function MedicineDetail(props) {
         )
         .then((response) => {
           console.log(response.data);
-          setMedicineDetail(response.data);
+          let details = medicineDetail.find((medicineDetail) => medicineDetail.external_id === response.data.external_id)
+          setMedicineDetail(details);
+          console.log(medicineDetail)
         })
         .catch((error) => {
           console.error(error);

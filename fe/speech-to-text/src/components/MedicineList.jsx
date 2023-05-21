@@ -13,7 +13,8 @@ export default function MedicineList({ medicine }) {
         },
       })
       .then((response) => {
-        console.log(response.data);
+        console.log("test")
+        console.log(response.data.description);
         setMedicineDetail(response.data);
         // alert(response.data.description);
       })
