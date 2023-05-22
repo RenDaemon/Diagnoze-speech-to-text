@@ -56,10 +56,10 @@ const Hospitals = () => {
       });
   };
 
-  const searchNearestHospitals =  (lat, long) => {
+  const searchNearestHospitals = (lat, long) => {
     getCurrentCity();
 
-     axios
+    axios
       .get(
         `https://nominatim.openstreetmap.org/search.php?q=hospital+in+${currentCity}&format=json&bounded=1&viewbox=${
           long - 0.5
@@ -82,13 +82,14 @@ const Hospitals = () => {
         <p>You are in {currentCity}</p>
         <div>
           {hospitals
-            ? hospitals.sort((a, b) => a.distance - b.distance)
-            .map((h) => (
-                <>
-                  <p>{h.display_name}</p>
-                  <p>Jarak : {h.distance.toFixed(2)} km</p>
-                </>
-              ))
+            ? hospitals
+                .sort((a, b) => a.distance - b.distance)
+                .map((h) => (
+                  <>
+                    <p>{h.display_name}</p>
+                    <p>Jarak : {h.distance.toFixed(2)} km</p>
+                  </>
+                ))
             : null}
         </div>
       </div>
