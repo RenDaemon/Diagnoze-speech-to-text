@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 const Hospitals = () => {
   const [currentCity, setCurrentCity] = useState("");
   const [hospitals, setHospitals] = useState([]);
+  const [pharm, setPharm] = useState([])
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -18,6 +19,12 @@ const Hospitals = () => {
       searchNearestHospitals();
     }
   }, [currentCity]);
+
+  useEffect(() => {
+    if(currentCity){
+      searchNearestPharmacy()
+    }
+  }, [currentCity])
 
   const getDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Radius of the earth in km
@@ -47,9 +54,11 @@ const Hospitals = () => {
         `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${long}&format=jsonv2`
       )
       .then((response) => {
-        const city = response.data.address.city;
+        const city = response.data.display_name;
+        console.log(response.data)
 
         searchNearestHospitals(lat, long);
+        searchNearestPharmacy(lat, long)
         setCurrentCity(city);
 
         return long;
@@ -71,9 +80,25 @@ const Hospitals = () => {
           h.distance = getDistance(lat, long, h.lat, h.lon);
         });
         setHospitals(hospital);
-        console.log(hospitals);
       });
   };
+
+  const searchNearestPharmacy = (lat, long) => {
+    getCurrentCity();
+
+    axios.get(
+      `https://nominatim.openstreetmap.org/search.php?q=pharmacy+in+${currentCity}&format=json&bounded=1&viewbox=${
+        long - 0.5
+      },${lat - 0.5},${long + 0.5},${lat + 0.5}&limit=10`
+    ).then((response) => {
+      let pharms = response.data
+      pharms.forEach((p) => {
+        p.distance = getDistance(lat, long, p.lat, p.lon)
+      })
+      setPharm(pharms)
+    });
+  }
+  
 
   return (
     <>
@@ -91,6 +116,17 @@ const Hospitals = () => {
                   </>
                 ))
             : null}
+        </div>
+        <div>
+          {
+            pharm ? pharm.sort((a, b) => a.distance - b.distance).map((p) => (
+              <>
+                <p>{p.display_name}</p>
+                <p>Jarak : {p.distance.toFixed(2)} km</p>
+              </>
+            )
+            ) : <><p>Gaada apotek deket masnya</p></>
+          }
         </div>
       </div>
     </>
